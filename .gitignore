@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*build*/
+*dist*/
+*.egg-info/
+*.egg
+*env*/
+*venv*/
+env/
+venv/
+ENV/
+VENV/
+*.log
+nohup.out
+*.csv
+*.sqlite
+*.sqlite3
+
+# Secrets and Local Configs
+sensor_node/frost_config_mqtt.json
+sensor_node/frost_config_sms.json # If you keep the file
+server_setup/caddy/Caddyfile
+server_setup/mosquitto/passwd
+sensor_node/services/*.service
+!sensor_node/services/*.example
+sensor_node/ppp/peers/gprs
+!sensor_node/ppp/peers/gprs.example
+sensor_node/ppp/chatscripts/gprs
+!sensor_node/ppp/chatscripts/gprs.example
+server_setup/logrotate.conf
+!logrotate.conf.example
+
+
+# IDE / Editor specific
+.vscode/
+.idea/
+*.swp
+*~
+
+# Data files
+unsent_data*.json
+
+# SSH keys
+.ssh/

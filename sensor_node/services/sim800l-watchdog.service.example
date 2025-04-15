@@ -1,0 +1,21 @@
+[Unit]
+Description=SIM800L GPRS Watchdog and Reset Service
+# Start after the network is generally up and after the target PPP service itself
+After=network.target ppp-gprs.service
+# If this watchdog starts, it implies we want the ppp service too
+Wants=ppp-gprs.service
+
+[Service]
+Type=simple
+# Make sure the path to your python interpreter and script is correct
+ExecStart=/home/pi/sensor_env/bin/python /home/pi/sim800l_watchdog.py
+# Run as user pi (adjust if needed, but pi usually has GPIO access)
+User=pi
+# Restart the watchdog service itself if it crashes
+Restart=on-failure
+RestartSec=60
+# Add a timeout in case the script hangs indefinitely
+TimeoutStartSec=90
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,19 @@
+{
+    "authorized_numbers": [
+        "+4900000000000",
+        "+4911111111111",
+        "+4922222222222"
+    ],
+    "warning_temp": 1.0,
+    "check_interval": 600,
+    "check_interval_critical": 180,
+    "sms_check_interval": 60,
+    "status_code": "STATUS",
+    "threshold_code": "THRESHOLD:",
+    "reboot_code": "REBOOT",
+    "add_number_code": "ADD:",
+    "remove_number_code": "REMOVE:",
+    "help_code": "HELP",
+    "battery_calibration_factor": 0.9993149044755124,
+    "dcdc_calibration_factor": 1.001122638064193
+}

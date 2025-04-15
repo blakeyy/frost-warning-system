@@ -1,0 +1,21 @@
+# Abort sequence in case of errors
+ABORT 'BUSY'
+ABORT 'NO CARRIER'
+ABORT 'NO DIALTONE'
+ABORT 'ERROR'
+ABORT 'NO ANSWER'
+TIMEOUT 10
+# Send AT to sync, expect OK
+'' AT
+# Optional: Turn command echo off for cleaner logs
+OK ATE0
+# Set the APN for Telekom. Context 1, Protocol IP, APN name.
+#OK 'AT+CGDCONT=1,"IP","internet.telekom"'
+OK 'AT+CGDCONT=1,"IP","pinternet.interkom.de"'
+# Report connection result codes
+# Enable detailed error reporting if needed
+OK AT+CMEE=2
+# Dial command for GPRS
+OK ATD*99#
+# Expect CONNECT, then pppd takes over
+CONNECT ''

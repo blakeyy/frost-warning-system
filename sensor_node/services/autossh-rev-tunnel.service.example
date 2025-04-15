@@ -1,0 +1,17 @@
+[Unit]
+Description=AutoSSH Reverse Tunnel Service (Pi to Home)
+# Start after network (including ppp) is likely up
+After=network-online.target pppd.service
+Wants=network-online.target
+
+[Service]
+# Run as the 'pi' user who owns the SSH keys
+User=pi
+# Prevent startup collision, wait a bit after network
+ExecStartPre=/bin/sleep 15
+ExecStart=/usr/bin/autossh -M 0 -N -R YOUR_TUNNEL_PORT:localhost:22 YOUR_SERVER_USER@YOUR_SERVER_DDNS -o "ServerAliveInterval=60" -o "ServerAliveCountMax=3" -o "ExitOnForwardFailure=yes" -o "ConnectTimeout=10" -o "StrictHostKeyChecking=no" -o "UserKnownHostsFile=/dev/null"
+RestartSec=5
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

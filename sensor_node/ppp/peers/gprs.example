@@ -1,0 +1,38 @@
+/dev/ttyS0       # Or /dev/ttyAMA0
+115200 #9600             # Or match the baud rate you confirmed
+#connect '/usr/sbin/chat -v -f /etc/chatscripts/gprs'
+connect '/usr/sbin/chat -v -V -s -f /etc/chatscripts/gprs'
+noauth
+
+# Use modem control lines (often needed)
+modem
+# Hardware flow control (try nocrtscts if crtscts causes issues)
+crtscts
+
+#defaultroute
+replacedefaultroute
+defaultroute
+usepeerdns
+
+# Assume IP addresses are assigned dynamically
+noipdefault
+# Allow peer to specify its IP address
+ipcp-accept-remote
+# Allow peer to specify our IP address
+ipcp-accept-local
+
+persist          # Keep trying to connect
+#nocrtscts        # No hardware flow control
+#local            # No modem control lines
+#nodetach         # Keep pppd in the foreground (for debugging) remove for background operation
+#debug            # Log debug info
+# User/Password often not needed for *99# dialing with standard APNs
+# user "your_username" # Usually not needed
+# password "your_password" # Usually not needed
+
+maxfail 0
+holdoff 10
+
+ipcp-max-failure 30
+
+logfile /var/log/ppp-gprs.log

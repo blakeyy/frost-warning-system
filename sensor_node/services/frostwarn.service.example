@@ -1,0 +1,13 @@
+[Unit]
+Description=Frost Warning System
+After=multi-user.target
+
+[Service]
+User=pi
+WorkingDirectory=/home/pi
+ExecStart=/home/pi/sensor_env/bin/python /home/pi/frost_warning_mqtt.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

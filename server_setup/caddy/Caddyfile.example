@@ -1,0 +1,7 @@
+grafana.yourdomain.com {
+    # Enable gzip compression (optional but good)
+    encode gzip
+
+    # Reverse proxy requests to Grafana running on port 3000
+    reverse_proxy localhost:3000
+}

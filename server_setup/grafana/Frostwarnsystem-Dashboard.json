@@ -1,0 +1,1157 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 8,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "eehmzjr62g3k0e"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red"
+              },
+              {
+                "color": "orange",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 3
+              },
+              {
+                "color": "green",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "id": 101,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "eehmzjr62g3k0e"
+          },
+          "query": "from(bucket: \"FrostDataBucket\")\n  |> range(start: -1h) // Look back reasonably far for the last point\n  |> filter(fn: (r) => r[\"_measurement\"] == \"frost_data\") // Use the measurement name written by Node-RED\n  |> filter(fn: (r) => r[\"_field\"] == \"dry_temp\")\n  // |> filter(fn: (r) => r[\"device_id\"] == \"YOUR_DEVICE_ID\") // Optional: Filter by specific device\n  |> last()\n  |> yield(name: \"last_dry_temp\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Akt. Trockentemp.",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "eehmzjr62g3k0e"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-red"
+              },
+              {
+                "color": "dark-orange",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 1.5
+              },
+              {
+                "color": "dark-green",
+                "value": 3
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 4,
+        "y": 0
+      },
+      "id": 102,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "eehmzjr62g3k0e"
+          },
+          "query": "from(bucket: \"FrostDataBucket\")\n  |> range(start: -1h) // Look back reasonably far for the last point\n  |> filter(fn: (r) => r[\"_measurement\"] == \"frost_data\")\n  |> filter(fn: (r) => r[\"_field\"] == \"wet_temp\")\n  // |> filter(fn: (r) => r[\"device_id\"] == \"YOUR_DEVICE_ID\") // Optional: Filter by specific device\n  |> last()\n  |> yield(name: \"last_wet_temp\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Akt. Nasstemp. (Gemessen)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "eehmzjr62g3k0e"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "purple",
+            "mode": "fixed"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 8,
+        "y": 0
+      },
+      "id": 103,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "eehmzjr62g3k0e"
+          },
+          "query": "from(bucket: \"FrostDataBucket\")\n  |> range(start: -1h) // Look back reasonably far for the last point\n  |> filter(fn: (r) => r[\"_measurement\"] == \"frost_data\")\n  |> filter(fn: (r) => r[\"_field\"] == \"humidity\")\n  // |> filter(fn: (r) => r[\"device_id\"] == \"YOUR_DEVICE_ID\") // Optional: Filter by specific device\n  |> last()\n  |> yield(name: \"last_humidity\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Akt. Luftfeuchtigkeit",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "eehmzjr62g3k0e"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-red"
+              },
+              {
+                "color": "orange",
+                "value": 10.5
+              },
+              {
+                "color": "yellow",
+                "value": 11.5
+              },
+              {
+                "color": "green",
+                "value": 12.3
+              }
+            ]
+          },
+          "unit": "volt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 12,
+        "y": 0
+      },
+      "id": 104,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "eehmzjr62g3k0e"
+          },
+          "query": "from(bucket: \"FrostDataBucket\")\n  |> range(start: -1h) // Look back reasonably far for the last point\n  |> filter(fn: (r) => r[\"_measurement\"] == \"frost_data\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_voltage\")\n  // |> filter(fn: (r) => r[\"device_id\"] == \"YOUR_DEVICE_ID\") // Optional: Filter by specific device\n  |> last()\n  |> yield(name: \"last_battery\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Batteriespannung",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "eehmzjr62g3k0e"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red"
+              },
+              {
+                "color": "orange",
+                "value": 4.7
+              },
+              {
+                "color": "green",
+                "value": 4.9
+              },
+              {
+                "color": "orange",
+                "value": 5.3
+              },
+              {
+                "color": "red",
+                "value": 5.5
+              }
+            ]
+          },
+          "unit": "volt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 15,
+        "y": 0
+      },
+      "id": 108,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "eehmzjr62g3k0e"
+          },
+          "query": "from(bucket: \"FrostDataBucket\")\n  |> range(start: -1h) // Look back reasonably far for the last point\n  |> filter(fn: (r) => r[\"_measurement\"] == \"frost_data\")\n  |> filter(fn: (r) => r[\"_field\"] == \"dcdc_voltage\")\n  // |> filter(fn: (r) => r[\"device_id\"] == \"YOUR_DEVICE_ID\") // Optional: Filter by specific device\n  |> last()\n  |> yield(name: \"last_dcdc\")",
+          "refId": "A"
+        }
+      ],
+      "title": "DC-DC Spannung",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "eehmzjr62g3k0e"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "color": "dark-red",
+                  "text": "Error / Timeout"
+                }
+              },
+              "type": "special"
+            },
+            {
+              "options": {
+                "offline_critical_error": {
+                  "color": "dark-red",
+                  "text": "Offline (Krit. Fehler)"
+                },
+                "offline_graceful": {
+                  "color": "orange",
+                  "text": "Offline (Gewollt)"
+                },
+                "offline_unexpected": {
+                  "color": "red",
+                  "text": "Offline (Unerwartet)"
+                },
+                "online": {
+                  "color": "green",
+                  "text": "Online"
+                },
+                "rebooting": {
+                  "color": "purple",
+                  "text": "Neustart..."
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "string"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 18,
+        "y": 0
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^_value$/",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "eehmzjr62g3k0e"
+          },
+          "query": "// Get the last status string from the dedicated status measurement\nfrom(bucket: \"FrostDataBucket\")\n  |> range(start: -30d) // Look back far enough for the retained message\n  |> filter(fn: (r) => r[\"_measurement\"] == \"device_status\") // Use the new measurement name\n  |> filter(fn: (r) => r[\"_field\"] == \"status\") // Filter for the 'status' field\n  // |> filter(fn: (r) => r[\"device_id\"] == \"YOUR_DEVICE_ID\") // Optional: Filter by specific device\n  |> last() // Get the most recent status (the retained one)\n  |> keep(columns: [\"_value\"]) // Keep only the status string value\n  |> yield(name: \"last_status\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Gerätestatus",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "eehmzjr62g3k0e"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "noValue": "Waiting...",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "dateTimeAsIsoNoDateIfToday"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 3,
+        "x": 21,
+        "y": 0
+      },
+      "id": 105,
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^_time$/",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "eehmzjr62g3k0e"
+          },
+          "query": "from(bucket: \"FrostDataBucket\")\n  |> range(start: -30d) // Use a long range\n  |> filter(fn: (r) => r[\"_measurement\"] == \"device_status\")\n  |> filter(fn: (r) => r[\"device_id\"] == \"243ac290-11c5-409f-bfa7-15bfc2a2b9f3\") // Hardcode your device ID for testing\n  |> group() // Group all results together\n  |> last() // Get the single record with the latest _time\n  |> keep(columns: [\"_time\"]) // Keep ONLY the _time column\n  |> yield(name: \"last_status_time\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Letzte Statusmeldung (alle 5 min.)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "eehmzjr62g3k0e"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "blue",
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "left",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Trockentemperatur"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Trockentemperatur"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Nasstemperatur (Gemessen) 243ac290-11c5-409f-bfa7-15bfc2a2b9f3"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Nasstemperatur (Gemessen)"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-blue",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 3
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "eehmzjr62g3k0e"
+          },
+          "query": "from(bucket: \"FrostDataBucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop) \n  |> filter(fn: (r) => r[\"_measurement\"] == \"frost_data\") \n  |> filter(fn: (r) => r[\"_field\"] == \"dry_temp\" or r[\"_field\"] == \"wet_temp\")\n  // |> filter(fn: (r) => r[\"device_id\"] == \"YOUR_DEVICE_ID\") \n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \n      if r._field == \"dry_temp\" then \"Trockentemperatur\" \n      else if r._field == \"wet_temp\" then \"Nasstemperatur (Gemessen)\"\n      else r._field\n  }))\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Temperaturverlauf (°C)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "eehmzjr62g3k0e"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-purple",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMax": 100,
+            "axisSoftMin": 0,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Luftfeuchtigkeit"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Luftfeuchtigkeit"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 15
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "eehmzjr62g3k0e"
+          },
+          "query": "from(bucket: \"FrostDataBucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop) \n  |> filter(fn: (r) => r[\"_measurement\"] == \"frost_data\") \n  |> filter(fn: (r) => r[\"_field\"] == \"humidity\") \n  // |> filter(fn: (r) => r[\"device_id\"] == \"YOUR_DEVICE_ID\") \n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false) \n  |> map(fn: (r) => ({ r with _field: \"Luftfeuchtigkeit\"})) // Rename field for legend\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Luftfeuchtigkeitsverlauf (%)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "eehmzjr62g3k0e"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "Volt",
+            "axisPlacement": "left",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "volt"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Batteriespannung"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Batteriespannung"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "super-light-yellow",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "DC-DC Spannung"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "DC-DC Spannung"
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-blue",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 25
+      },
+      "id": 109,
+      "options": {
+        "legend": {
+          "calcs": [
+            "min",
+            "max",
+            "lastNotNull"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "eehmzjr62g3k0e"
+          },
+          "query": "from(bucket: \"FrostDataBucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop) \n  |> filter(fn: (r) => r[\"_measurement\"] == \"frost_data\") \n  |> filter(fn: (r) => r[\"_field\"] == \"battery_voltage\" or r[\"_field\"] == \"dcdc_voltage\")\n  // |> filter(fn: (r) => r[\"device_id\"] == \"YOUR_DEVICE_ID\") \n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> map(fn: (r) => ({ r with _field: \n      if r._field == \"battery_voltage\" then \"Batteriespannung\" \n      else if r._field == \"dcdc_voltage\" then \"DC-DC Spannung\"\n      else r._field\n  }))\n  |> yield(name: \"mean_voltages\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Spannungsverläufe (V)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "eehmzjr62g3k0e"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "min_humidity"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Min Feuchte"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "max_humidity"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Max Feuchte"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 8,
+        "x": 0,
+        "y": 35
+      },
+      "id": 107,
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "vertical",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": false
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "eehmzjr62g3k0e"
+          },
+          "query": "// Fetch data for the selected time range\ndata = from(bucket: \"FrostDataBucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"frost_data\")\n  |> filter(fn: (r) => r[\"_field\"] == \"humidity\")\n  // |> filter(fn: (r) => r[\"device_id\"] == \"YOUR_DEVICE_ID\")\n\n// Calculate min and max for each field separately\nmin_vals = data |> min() |> set(key: \"stat\", value: \"min\")\nmax_vals = data |> max() |> set(key: \"stat\", value: \"max\")\n\n// Combine min and max results\nunion(tables: [min_vals, max_vals])\n  // Create combined field names like min_humidity, max_humidity\n  |> map(fn: (r) => ({ r with _field: r.stat + \"_\" + r._field })) \n  // *** Group everything into a single table BEFORE pivoting ***\n  |> group()\n  // Pivot into a single row. Use empty rowKey list when grouping first.\n  |> pivot(rowKey:[], columnKey: [\"_field\"], valueColumn: \"_value\")\n  // Remove columns not needed for display (last() is no longer needed after group+pivot)\n  |> drop(columns: [\"_time\", \"_start\", \"_stop\", \"stat\", \"_measurement\"]) \n  |> yield(name: \"range_stats\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Luftfeuchtigkeitsbereich (%)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "eehmzjr62g3k0e"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "min_dry_temp"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Min Trocken"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "max_dry_temp"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Max Trocken"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "min_effective_wet_temp"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Min Nass"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "max_effective_wet_temp"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Max Nass"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 8,
+        "x": 8,
+        "y": 35
+      },
+      "id": 106,
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "vertical",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": false
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "eehmzjr62g3k0e"
+          },
+          "query": "// Fetch data for the selected time range\ndata = from(bucket: \"FrostDataBucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"frost_data\")\n  |> filter(fn: (r) => r[\"_field\"] == \"dry_temp\" or r[\"_field\"] == \"effective_wet_temp\")\n  // |> filter(fn: (r) => r[\"device_id\"] == \"YOUR_DEVICE_ID\")\n\n// Calculate min and max for each field separately\nmin_vals = data |> min() |> set(key: \"stat\", value: \"min\")\nmax_vals = data |> max() |> set(key: \"stat\", value: \"max\")\n\n// Combine min and max results\nunion(tables: [min_vals, max_vals])\n  // Create combined field names like min_dry_temp, max_effective_wet_temp\n  |> map(fn: (r) => ({ r with _field: r.stat + \"_\" + r._field })) \n  // *** Group everything into a single table BEFORE pivoting ***\n  |> group()\n  // Pivot into a single row. Use empty rowKey list when grouping first.\n  |> pivot(rowKey:[], columnKey: [\"_field\"], valueColumn: \"_value\")\n  // Remove columns not needed for display (last() is no longer needed after group+pivot)\n  |> drop(columns: [\"_time\", \"_start\", \"_stop\", \"stat\", \"_measurement\"]) \n  |> yield(name: \"range_stats\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Temperaturbereich (°C)",
+      "type": "stat"
+    }
+  ],
+  "preload": false,
+  "refresh": "auto",
+  "schemaVersion": 41,
+  "tags": [
+    "frost",
+    "monitoring",
+    "environment",
+    "german",
+    "mqtt"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Frostwarnsystem",
+  "uid": "frost-warning-mqtt-german-v1",
+  "version": 18
+}

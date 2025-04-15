@@ -1,0 +1,16 @@
+[Unit]
+Description=PPP connection for GPRS (Telekom)
+After=network.target # Start after basic networking
+
+[Service]
+# pppd forks into the background
+Type=forking
+# Explicitly use nodetach here maybe? Or rely on pppd backgrounding. Try without first.
+ExecStart=/usr/bin/pon gprs 
+ExecStop=/usr/bin/poff gprs
+# Restart if pppd crashes
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

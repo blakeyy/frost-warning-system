@@ -1,0 +1,241 @@
+[
+    {
+        "id": "4cbe18f08ea894c0",
+        "type": "tab",
+        "label": "FrostWarner MQTT",
+        "disabled": false,
+        "info": "Handles sensor data and device status messages from MQTT and writes them to InfluxDB.",
+        "env": []
+    },
+    {
+        "id": "04914c768a46bea0",
+        "type": "mqtt in",
+        "z": "4cbe18f08ea894c0",
+        "name": "MQTT Sensors In",
+        "topic": "frostsystem/+/sensors",
+        "qos": "1",
+        "datatype": "utf8",
+        "broker": "edba035d1a50aad2",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 160,
+        "y": 120,
+        "wires": [
+            [
+                "c8e031b106ab46b0"
+            ]
+        ]
+    },
+    {
+        "id": "c8e031b106ab46b0",
+        "type": "json",
+        "z": "4cbe18f08ea894c0",
+        "name": "Parse Sensor JSON",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 370,
+        "y": 120,
+        "wires": [
+            [
+                "06fcba8a69273061"
+            ]
+        ]
+    },
+    {
+        "id": "06fcba8a69273061",
+        "type": "function",
+        "z": "4cbe18f08ea894c0",
+        "name": "Format Sensors for InfluxDB",
+        "func": "// Incoming payload from the JSON node (sensor data)\nlet data = msg.payload;\n\n// Define which keys should be tags for sensor data\n// Include ip_address if you want it tagged with sensor data\nconst tags = ['device_id'];\n\nlet fields = [];\nlet payloadTags = [];\n\n// Ensure data is an object before iterating\nif (typeof data === 'object' && data !== null) {\n    // Build Tags string part\n    for (const key of tags) {\n        if (data.hasOwnProperty(key) && data[key] !== null && data[key] !== \"N/A\") {\n            // Escape spaces, commas, and equals signs in tag values\n            let tagValue = String(data[key]).replace(/ /g, '\\\\ ').replace(/,/g, '\\\\,').replace(/=/g, '\\\\=');\n            payloadTags.push(`${key}=${tagValue}`);\n        }\n    }\n\n    // Build Fields string part\n    for (const [key, value] of Object.entries(data)) {\n        // Inside the loop iterating through data entries:\n        if (!tags.includes(key) && value !== null && key !== 'timestamp') {\n            if (typeof value === 'number' && isFinite(value)) {\n                // ALWAYS format numbers as float (default Line Protocol, no 'i')\n                fields.push(`${key}=${value}`); // Ensures consistency as float type in InfluxDB\n            } else if (typeof value === 'boolean') {\n                // Format booleans (t/f)\n                fields.push(`${key}=${value ? 't' : 'f'}`);\n            } else if (typeof value === 'string') {\n                // Only include specific strings if needed as fields (e.g., uptime_str)\n                // Avoid storing arbitrary strings as fields if possible.\n                if (key === 'uptime_str') {\n                    // Format strings (escape spaces, commas, equals, quotes)\n                    let strValue = value.replace(/\\\\/g, '\\\\\\\\\\\\\\\\').replace(/ /g, '\\\\\\\\ ').replace(/,/g, '\\\\\\\\,').replace(/=/g, '\\\\\\\\=').replace(/\\\"/g, '\\\\\\\\\\\"');\n                    fields.push(`${key}=\\\"${strValue}\\\"`);\n                }\n                // Add other specific string fields if needed\n            }\n            // Add other specific types if necessary\n        }\n    }\n\n} else {\n    node.error(\"Sensor data payload is not an object\", msg);\n    return null; // Stop the flow if data is invalid\n}\n\nif (fields.length === 0) {\n    node.warn(\"No valid sensor fields found to write\", msg);\n    return null;\n}\n\n// Assemble Line Protocol String: measurement[,tag_set] field_set [timestamp]\nlet measurement = \"frost_data\"; // Keep original measurement name for sensor data\nlet tagString = payloadTags.join(',');\nlet fieldString = fields.join(',');\n\n// Timestamp (Optional - InfluxDB will use server time if omitted)\n// Use the timestamp provided by the device (expected ISO format)\nlet timestampSeconds = \"\";\nif (data.timestamp) {\n    try {\n        // Convert ISO string to Unix timestamp in seconds\n        let ts = Math.floor(new Date(data.timestamp).getTime() / 1000);\n        if (!isNaN(ts)) {\n             timestampSeconds = \" \" + ts;\n        } else {\n            node.warn(\"Could not parse sensor timestamp: \" + data.timestamp);\n        }\n    } catch (e) { node.warn(\"Error parsing sensor timestamp: \" + e); }\n}\n\n// Final line protocol string\nmsg.payload = `${measurement}${tagString ? ',' + tagString : ''} ${fieldString}${timestampSeconds}`;\n\nreturn msg; // Pass the line protocol string in msg.payload\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 1,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 610,
+        "y": 120,
+        "wires": [
+            [
+                "9c61a92730dfb99e"
+            ]
+        ]
+    },
+    {
+        "id": "9c61a92730dfb99e",
+        "type": "change",
+        "z": "4cbe18f08ea894c0",
+        "name": "Set InfluxDB Headers",
+        "rules": [
+            {
+                "t": "set",
+                "p": "headers",
+                "pt": "msg",
+                "to": "{\"Authorization\":\"Token PLACEHOLDER_INFLUXDB_API_TOKEN\",\"Content-Type\":\"text/plain; charset=utf-8\",\"Accept\":\"application/json\"}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 600,
+        "y": 300,
+        "wires": [
+            [
+                "d74e50cef6920472"
+            ]
+        ]
+    },
+    {
+        "id": "d74e50cef6920472",
+        "type": "http request",
+        "z": "4cbe18f08ea894c0",
+        "name": "Write to InfluxDB",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://localhost:8086/api/v2/write?org=ExampleOrg&bucket=ExampleBucket&precision=s",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": true,
+        "headers": [],
+        "x": 810,
+        "y": 300,
+        "wires": [
+            [
+                "488cc7e2930266ae"
+            ]
+        ]
+    },
+    {
+        "id": "488cc7e2930266ae",
+        "type": "debug",
+        "z": "4cbe18f08ea894c0",
+        "name": "Influx Write Result",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1010,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "0d3d423acdea4e01",
+        "type": "mqtt in",
+        "z": "4cbe18f08ea894c0",
+        "name": "MQTT Status In",
+        "topic": "frostsystem/+/status",
+        "qos": "1",
+        "datatype": "utf8",
+        "broker": "edba035d1a50aad2",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 160,
+        "y": 220,
+        "wires": [
+            [
+                "31bef4e834f3efc7"
+            ]
+        ]
+    },
+    {
+        "id": "31bef4e834f3efc7",
+        "type": "json",
+        "z": "4cbe18f08ea894c0",
+        "name": "Parse Status JSON",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 370,
+        "y": 220,
+        "wires": [
+            [
+                "8f12c14bb6ec0658"
+            ]
+        ]
+    },
+    {
+        "id": "8f12c14bb6ec0658",
+        "type": "function",
+        "z": "4cbe18f08ea894c0",
+        "name": "Format Status for InfluxDB",
+        "func": "// Incoming payload from the JSON node (status data)\n// Example: { status: \"online\", payload_created_at_iso: \"...\", device_id: \"...\" }\nlet data = msg.payload;\n\n// Define which keys from payload become tags\nconst tagKeys = ['device_id'];\n\nlet payloadTags = [];\nlet fields = [];\n\n// Ensure data is an object\nif (typeof data === 'object' && data !== null) {\n\n    // --- Build Tags ---\n    for (const key of tagKeys) {\n        if (data.hasOwnProperty(key) && data[key] !== null && data[key] !== \"\") {\n            // Escape spaces, commas, equals for TAG keys/values\n            let tagValue = String(data[key])\n                             .replace(/ /g, '\\\\ ')\n                             .replace(/,/g, '\\\\,')\n                             .replace(/=/g, '\\\\=');\n            let tagKey = String(key)\n                           .replace(/ /g, '\\\\ ')\n                           .replace(/,/g, '\\\\,')\n                           .replace(/=/g, '\\\\=');\n            payloadTags.push(`${tagKey}=${tagValue}`);\n        }\n    }\n\n    // --- Build Fields ---\n    // Handle the 'status' field (string)\n    if (data.hasOwnProperty('status') && typeof data.status === 'string') {\n        // Escape backslashes and double quotes for STRING FIELD values\n        let strValue = data.status.replace(/\\\\/g, '\\\\\\\\').replace(/\"/g, '\\\\\"');\n        fields.push(`status=\"${strValue}\"`); // Add quotes around string field value\n    } else {\n        node.warn(\"Status field missing or not a string in status payload\", msg);\n        return null; // Stop flow if essential status field is missing\n    }\n\n    // Optional: You could add payload_created_at_iso as another STRING field here\n    // if you still want to store it, but NOT use it as the primary timestamp.\n    if (data.hasOwnProperty('payload_created_at_iso') && typeof data.payload_created_at_iso === 'string') {\n        let tsStrValue = data.payload_created_at_iso.replace(/\\\\/g, '\\\\\\\\').replace(/\"/g, '\\\\\"');\n        fields.push(`payload_created_at_iso=\"${tsStrValue}\"`);\n    }\n\n\n} else {\n    node.error(\"Status data payload is not an object\", msg);\n    return null; // Stop flow\n}\n\n// Check if we actually created any fields\nif (fields.length === 0) {\n    node.warn(\"No valid status fields found to write\", msg);\n    return null;\n}\n\n// --- Assemble Line Protocol String ---\nlet measurement = \"device_status\"; // Use the specific measurement name\nlet tagString = payloadTags.join(',');\nlet fieldString = fields.join(',');\n\n// *** CRITICAL CHANGE: DO NOT add an explicit timestamp ***\n// Let the InfluxDB node determine the timestamp based on arrival time.\nmsg.payload = `${measurement}${tagString ? ',' + tagString : ''} ${fieldString}`;\n\n// Optional: Log the final line protocol string for debugging\n// node.warn(msg.payload);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 2,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 220,
+        "wires": [
+            [
+                "9c61a92730dfb99e"
+            ]
+        ]
+    },
+    {
+        "id": "ccbb1278ec455793",
+        "type": "function",
+        "z": "4cbe18f08ea894c0",
+        "name": "Format Status for InfluxDB",
+        "func": "// Incoming payload from the JSON node (status data)\nlet data = msg.payload;\n\n// Define tags for status data - REMOVE ip_address\nconst tags = ['device_id'];\n\nlet fields = [];\nlet payloadTags = [];\n\n// Ensure data is an object\nif (typeof data === 'object' && data !== null) {\n    // Build Tags\n    for (const key of tags) {\n        // --- This loop now only handles device_id ---\n        if (data.hasOwnProperty(key) && data[key] !== null) { // Removed \"N/A\" check as it's not relevant for device_id\n            let tagValue = String(data[key]).replace(/ /g, '\\\\\\\\ ').replace(/,/g, '\\\\\\\\,').replace(/=/g, '\\\\\\\\=');\n            payloadTags.push(`${key}=${tagValue}`);\n        }\n    }\n\n    // Build Fields - only the 'status' string\n    if (data.hasOwnProperty('status') && typeof data.status === 'string') {\n        // Escape spaces, commas, equals, quotes for the string field value\n        let strValue = data.status.replace(/\\\\/g, '\\\\\\\\\\\\\\\\').replace(/ /g, '\\\\\\\\ ').replace(/,/g, '\\\\\\\\,').replace(/=/g, '\\\\\\\\=').replace(/\\\"/g, '\\\\\\\\\\\"');\n        fields.push(`status=\\\"${strValue}\\\"`);\n    } else {\n        node.warn(\"Status field missing or not a string in status payload\", msg);\n        return null;\n    }\n\n} else {\n    node.error(\"Status data payload is not an object\", msg);\n    return null; // Stop flow\n}\n\nif (fields.length === 0) {\n    node.warn(\"No valid status fields found to write\", msg);\n    return null;\n}\n\n// Assemble Line Protocol String\nlet measurement = \"device_status\"; // Use the NEW measurement name\nlet tagString = payloadTags.join(','); // Will only contain device_id=... now\nlet fieldString = fields.join(',');\n\n// Timestamp: Use the ISO timestamp provided by the device\nlet timestampSeconds = \"\";\nif (data.timestamp_iso) {\n    try {\n        let ts = Math.floor(new Date(data.timestamp_iso).getTime() / 1000);\n         if (!isNaN(ts)) {\n             timestampSeconds = \" \" + ts;\n        } else {\n            node.warn(\"Could not parse status timestamp: \" + data.timestamp_iso);\n        }\n    } catch (e) { node.warn(\"Error parsing status timestamp: \" + e); }\n}\n\n// Final line protocol string\nmsg.payload = `${measurement}${tagString ? ',' + tagString : ''} ${fieldString}${timestampSeconds}`;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 2,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "edba035d1a50aad2",
+        "type": "mqtt-broker",
+        "name": "Local Mosquitto",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]
