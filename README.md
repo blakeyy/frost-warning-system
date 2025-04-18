@@ -51,6 +51,10 @@ Beyond the practical application, this project served as a valuable learning exp
 
 **(See `hardware/schematic.png` (TBD) for circuit diagram)**
 
+Here's a look at the assembled sensor node:
+
+![Assembled Frost Sensor Node](hardware/frost_sensor_build.jpg)
+
 ## Software & Technologies
 
 **Sensor Node (Pi Zero):**
